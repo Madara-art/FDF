@@ -21,6 +21,6 @@ typedef struct s_mlx
 	int endian;
 	char *data;
 }t_mlx;
-void	my_mlx_pixel_put(t_mlx *data, int x, int y, int color);
+void	my_mlx_pixel_put(t_mlx *data, int x, int y, int color, int z);
 
 #endif

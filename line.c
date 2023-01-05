@@ -19,7 +19,7 @@ typedef struct s_coordinates {
 
 
 
-void draw_line(t_mlx *v,double x1,double y1,double x2,double y2)
+void draw_line(t_mlx *v,double x1,double y1,double x2,double y2, int z)
 {
 	double a;
 	int i,max;
@@ -40,7 +40,7 @@ void draw_line(t_mlx *v,double x1,double y1,double x2,double y2)
 		}
 		while(i++ < max)
 		{
-			my_mlx_pixel_put(v,i,round_it(i*a + b),16777215);
+			my_mlx_pixel_put(v,i,round_it(i*a + b),16777215, z);
 		}
 	}
 	else
@@ -58,9 +58,9 @@ void draw_line(t_mlx *v,double x1,double y1,double x2,double y2)
 		while(i++ < max)
 		{
 			if(x1!=x2)
-				my_mlx_pixel_put(v,round_it((i-b)/a),i,16777215);
+				my_mlx_pixel_put(v,round_it((i-b)/a),i,16777215, z);
 			else
-				my_mlx_pixel_put(v,x1,i,16777215);
+				my_mlx_pixel_put(v,x1,i,16777215, z);
 
 		}
 	}
@@ -79,53 +79,104 @@ xyz **mh(t_mlx *var)
 		map[i] = malloc(sizeof(xyz) * y);
 		i++;
 	}
-	i = 2;
-	int j;
-	while(i < x + 2)
-	{
-		j = i;
-		while (j < y + i)
-		{
-			map[i - 2][j - i].x = j;
-			map[i - 2][j - i].y = i;
-			j++;
-
-		}
-		i++;
-	}
 	i = 0;
-	while (i < x)
+	int j;
+	while(i < x)
 	{
 		j = 0;
 		while (j < y)
 		{
-			printf("(%d %d)\t", map[i][j].x * 10 , map[i][j].y * 10);
-			//draw_line(var->mlx, map[i][j].x * 30, map[i][j].y * 30, map[i][j + 1].x * 30, map[i][j + 1].y * 30);
+			map[i][j].x = j;
+			map[i][j].y = i;
+			map[i][j].z = 0;
 			j++;
 
 		}
-		printf("\n");
 		i++;
 	}
+	map[3][3].z = 100;
+	map[3][4].z = 100;
+	// map[1][1].x = (sqrt(2)/2)*(map[1][1].x - map[1][1].y)+10;
+	// map[1][1].y = sqrt(2/3) * 10 - (1/sqrt(6))*(map[1][1].x + map[1][1].y)+10;
+	// map[1][2].x += 5;
+	// map[1][2].y += 5;
+	// map[1][3].x += 5;
+	// map[1][3].y += 5;
+	// map[2][2].x += 5;
+	// map[2][2].y += 5;
+	// map[2][3].x += 5;
+	// map[2][3].y += 5;
+	// map[3][2].x += 5;
+	// map[3][2].y += 5;
+	// map[3][3].x += 5;
+	// map[3][3].y += 5;
+	i = 0;
+	// while (i < x)
+	// {
+	// 	j = 0;
+	// 	while (j < y - 1)
+	// 	{
+	// 		//printf("(%d %d)\n", map[i][j].x * 50 , map[i][j].y * 50);
+	// 		draw_line(var->mlx, map[i][j].x * 50, map[i][j].y * 50, map[i][j + 1].x * 50, map[i][j + 1].y * 50, 0);
+	// 		j++;
+
+	// 	}
+	// 	// printf("\n");
+	// 	i++;
+	// }
+
+	j = -1;
+	i = -1;
+	while(++i<x)
+	{
+		j = -1;
+		while(++j<y-1)
+		draw_line(var,map[i][j].x * 100, map[i][j].y * 100, map[i][j + 1].x * 100, map[i][j + 1].y * 100, map[i][j].z);
+	}
+	j = -1;
+	i = -1;
+	while(++i<x-1)
+	{
+		j = -1;
+		while(++j<y)
+		draw_line(var,map[i][j].x * 100, map[i][j].y * 100, map[i+1][j].x * 100, map[i+1][j].y * 100, map[i][j].z);
+	}
+	// i++;
+	// printf("(%d %d)\n", map[i][j].x * 50 , map[i][j].y * 50);
+	// draw_line(var,map[i][j].x * 50, map[i][j].y * 50, map[i][j + 1].x * 50, map[i][j + 1].y * 50, 0);
+
 	return (map);
 }
 
 int main(int argc, char const *argv[])
 {
 	t_mlx *var;
-	int height = 700;
+	int height = 1000;
 	int width = 1000;
 	var = malloc(sizeof(t_mlx));
 	var->mlx = mlx_init();
 	var->win = mlx_new_window(var->mlx,width,height,"Hi!");
 	var->img = mlx_new_image(var->mlx,width,height);
 	var->data = mlx_get_data_addr(var->img,&(var->bpp),&(var->size_line),&(var->endian));
-	// xyz **s = mh(var);
-	draw_line(var,100 , 100 , 100 ,500 );
-	draw_line(var,100 , 100 , 500 ,100 );
-	draw_line(var,500 , 100 , 500 ,500 );
-	draw_line(var,100 , 500 , 500 ,500 );
+	xyz **s = mh(var);
+	// draw_line(var,100 , 100 , 100 ,400 , 0);
+	// draw_line(var,100 , 100 , 400 ,100 , 0);
+	// draw_line(var,400 , 100 , 400 ,400 , 0);
+	// draw_line(var,100 , 400 , 400 ,400 , 0);
+	// int e = 0;
+	// draw_line(var,100+ e , 100 + e, 100+ e ,400 + e, 600);
+	// draw_line(var,100 + e, 100 + e, 400+ e ,100+ e , 600);
+	// draw_line(var,400 + e, 100 + e, 400 + e,400 + e, 600);
+	// draw_line(var,100 + e, 400 + e, 400 + e,400 + e, 600);
+	// draw_line(var,400 , 400 , 400 ,700 );
+	// draw_line(var,400 , 400 , 700 ,400 );
+	// draw_line(var,700 , 400 , 700 ,700 );
+	// draw_line(var,400 , 700 , 700 ,700 );
 
+	// draw_line(var,400 , 100 , 700 ,100 );
+	// draw_line(var,400 , 100 , 400 ,400 );
+	// draw_line(var,400 , 400 , 700 ,400 );
+	// draw_line(var,700 , 400 , 700 ,100 );
 	// int a;
 	// int x1=10,x2=20,y1=10,y2=30;
 	// a = (x1-x2)/(y1-y2);
@@ -136,3 +187,8 @@ int main(int argc, char const *argv[])
 	mlx_loop(var->mlx);
 	return 0;
 }
+// int main(int argc, char const *argv[])
+// {
+// 	mh();
+// 	return 0;
+// }
